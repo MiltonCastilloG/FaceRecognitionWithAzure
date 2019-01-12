@@ -102,7 +102,7 @@ namespace VideoRecorder
             }
             else
             {
-                MessageBox.Show("No camera found");
+                MessageBox.Show("No webcam found");
             }
         }
 
@@ -168,17 +168,19 @@ namespace VideoRecorder
 
         private void StopRecording()
         {
-            if (_recording)
-            {
-                _recording = false;
-                _writer.Close();
-                _writer.Dispose();
-                AskForRecognition(_fullPath);
-            }
+            _recording = false;
+            _writer.Close();
+            _writer.Dispose();
+
+            var rpcClient = new RpcClient();
+            Console.WriteLine(" [x] Requesting video processing of " + _fullPath);
+            var response = rpcClient.Call(_fullPath);
+            Console.WriteLine(response);
+            rpcClient.Close();
+            if (response == "No face")
+                MessageBox.Show("No face identified");
             else
-            {
-                MessageBox.Show("No recording has started");
-            }
+                Process.Start(response);
         }
 
         private void StartRecording()
@@ -204,8 +206,6 @@ namespace VideoRecorder
             _recording = true;
         }
 
-
-
         private void SaveSnapshot()
         {
             var dialog = new SaveFileDialog();
@@ -223,20 +223,6 @@ namespace VideoRecorder
                 encoder.Save(filestream);
             }
         }
-
-        private void AskForRecognition(string path)
-        {
-            var rpcClient = new RpcClient();
-            Console.WriteLine(" [x] Requesting video processing of " + path);
-            var response = rpcClient.Call(path);
-            Console.WriteLine(response);
-            rpcClient.Close();
-            if (response == "No face")
-                MessageBox.Show("No face identified");
-            else
-                Process.Start(response);
-        }
-
 
         public void Dispose()
         {
