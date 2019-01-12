@@ -1,11 +1,11 @@
 import http.client, urllib.request, urllib.parse, urllib.error, json
 
-
 def FaceInfo(imageArray):
     print("Inicia la request")
+    httpsConnection = ''
     headers = {
     'Content-Type': 'application/octet-stream',
-    'Ocp-Apim-Subscription-Key': 'fd273be90a4540b388b5b3fb02a2e044',
+    'Ocp-Apim-Subscription-Key': '',
     }
 
     params = urllib.parse.urlencode({
@@ -18,7 +18,7 @@ def FaceInfo(imageArray):
         imageInBytes = open(frame, "rb").read()
         try:
             print(frame)
-            conn = http.client.HTTPSConnection('westcentralus.api.cognitive.microsoft.com')
+            conn = http.client.HTTPSConnection(httpsConnection)
             conn.request("POST", "/face/v1.0/detect?%s" % params,imageInBytes, headers)
             response = conn.getresponse()
             data = response.read()
